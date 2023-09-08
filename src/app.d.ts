@@ -6,6 +6,9 @@ declare global {
 		// interface Locals {}
 		// interface PageData {}
 		// interface Platform {}
+		interface Errors extends Record<string, unknown> {
+			errors: Record<string, string>
+		}
 	}
 }
 

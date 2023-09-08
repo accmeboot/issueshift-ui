@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-neutral flex items-center justify-center">
-	<form class="p-6 bg-neutral-content rounded-lg shadow-lg w-fit min-w-[30%]">
-		<h1 class='text-neutral text-xl font-bold'>Sign in</h1>
+	<form class="p-6 bg-neutral-content rounded-lg shadow-lg w-96">
+		<h1 class='text-neutral text-xl font-bold'>Sign Up</h1>
 
 		<div class='space-y-4 mt-4'>
 			<div>
@@ -26,12 +26,16 @@
 
 			<div>
 				<label for="avatar" class="label text-neutral text-sm font-bold">Select Avatar</label>
-				<input id='avatar' name='avatar' type='file' class='file-input' >
+				<input id='avatar' name='avatar' type='file' class='file-input w-full' >
 			</div>
 		</div>
 
 		<div class='mt-12'>
 			<button type="submit" class="btn btn-primary w-full">Submit</button>
 		</div>
+
+		<span class='block text-center mt-5'>
+			Already have an account? <a href='/signin' class='underline text-primary font-bold'>Sign In</a>
+		</span>
 	</form>
 </div>
