@@ -1,7 +1,14 @@
 import type { Actions } from '@sveltejs/kit'
-import { fail } from '@sveltejs/kit'
+import { type ServerLoad, fail, redirect  } from '@sveltejs/kit'
 import { uploadImage } from '$lib/services'
 import { Endpoint } from '$lib'
+
+
+export const load: ServerLoad = ({ url, cookies }) => {
+	if (cookies.get('Bearer')) {
+		throw redirect(302, '/')
+	}
+}
 
 export const actions: Actions = {
 	default: async ({ request, fetch }) => {

@@ -1,6 +1,16 @@
-import type { Actions } from "@sveltejs/kit";
-import { fail } from '@sveltejs/kit'
+import type { Actions, ServerLoad } from '@sveltejs/kit'
+import { fail, redirect } from '@sveltejs/kit'
 import { Endpoint } from '$lib'
+
+export const load: ServerLoad = ({ url, cookies }) => {
+	if (cookies.get('Bearer')) {
+		throw redirect(302, '/')
+	}
+
+	const redirectTo = url?.searchParams.get('redirectTo') || '/'
+
+	return { redirectTo }
+}
 
 export const actions: Actions = {
 	default: async ({ request, fetch, cookies }) => {

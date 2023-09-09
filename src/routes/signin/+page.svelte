@@ -2,10 +2,11 @@
 	import { enhance } from '$app/forms';
 	import type { SubmitFunction } from "@sveltejs/kit";
 	import { goto } from '$app/navigation';
-	import type { ActionData } from "./$types";
+	import type { ActionData, PageData } from "./$types";
 	import { toastStore } from '$lib/stores'
 
 	export let form: ActionData
+	export let data: PageData
 
 	let loading = false
 	let password: string
@@ -17,7 +18,7 @@
 		loading = true
 		return async ({update, result}) => {
 			if (result.type === 'success') {
-				return await goto("/")
+				return await goto(data?.redirectTo)
 			}
 
 			if (result.type === 'failure' && result.status === 500) {
