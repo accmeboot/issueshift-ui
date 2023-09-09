@@ -1,5 +1,6 @@
 import type { Actions } from "@sveltejs/kit";
-import { fail } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit'
+import { Endpoint } from '$lib'
 
 export const actions: Actions = {
 	default: async ({ request, fetch, cookies }) => {
@@ -18,7 +19,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			const response = await fetch("/v1/signin", {
+			const response = await fetch(Endpoint.signIn, {
 				method: 'POST',
 				body: JSON.stringify({email, password}),
 			})
@@ -33,9 +34,10 @@ export const actions: Actions = {
 
 			return fail<App.Errors>(response.status, await response.json())
 		} catch (e) {
-			console.error(e)
-			return fail(500, {
-				error: "internal server error",
+			return fail<App.Errors>(500, {
+				errors: {
+					info: 'we are having trouble connecting to the server, please try again'
+				}
 			})
 		}
 	}
