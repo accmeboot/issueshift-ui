@@ -1,77 +1,34 @@
-import type { ServerLoad } from '@sveltejs/kit'
 import { Endpoint } from '$lib'
 import { getAuthHeaders } from '$lib/helpers'
-import { fail } from '@sveltejs/kit'
+import { exception } from '$lib/exception'
 
-type Task = {
-	id: number;
-	title: string;
-	description: string;
-	createdAt: Date;
-	updatedAt: Date;
-	status: 'todo' | 'in_progress' | 'done';
-}
+import type { ServerLoad } from '@sveltejs/kit'
+import type { Task } from '$lib/types'
 
-const getMappedTasks = (tasks: unknown): Task[] => {
-	if (Array.isArray(tasks)) {
-		return tasks.map((task: Record<string, string>) => ({
-				id: Number(task.id),
-				title: task.title,
-				description: task.description,
-				createdAt: new Date(task.created_at),
-				updatedAt: new Date(task.updated_at),
-				status: task.status as Task['status'],
-			})
-		)
-	}
-
-	return [];
+type TasksRes = {
+	tasks: Task[]
 }
 
 export const load: ServerLoad = async ({ fetch, cookies }) => {
 	try {
-		const tasksPromises = ['todo', 'in_progress', 'done'].map((status) => (
+		const taskPromises = ['todo', 'in_progress', 'done'].map((status) => (
 			fetch(`${Endpoint.getTasks}?status=${status}`, { headers: getAuthHeaders(cookies) })
 		))
 
-		return Promise.all(tasksPromises)
-			.then(([todoResponse, inProgressResponse, doneResponse]) => {
-				const responsePromises = []
+		const tasksRes = await Promise.all(taskPromises)
+		const tasksData: TasksRes[] = await Promise.all(
+			tasksRes.map(res => res.ok && res.status === 200 && res.json())
+		)
 
-				if (todoResponse.ok && todoResponse.status === 200) {
-					responsePromises.push(todoResponse.json())
-				}
-
-				if (inProgressResponse.ok && inProgressResponse.status === 200) {
-					responsePromises.push(inProgressResponse.json())
-				}
-
-				if (doneResponse.ok && doneResponse.status === 200) {
-					responsePromises.push(doneResponse.json())
-				}
-
-				return Promise.all(responsePromises).then((res) => {
-					return {
-						todo: getMappedTasks(res[0]?.tasks ?? []),
-						inProgress: getMappedTasks(res[1]?.tasks ?? []),
-						done: getMappedTasks(res[2]?.tasks ?? []),
-					}
-				})
-			})
-			.catch(err => {
-				console.error(err)
-				return fail<App.Errors>(500, {
-					errors: {
-						info: 'failed to load tasks',
-					}
-				})
-			})
+		return {
+			todo: tasksData[0]?.tasks ?? [],
+			inProgress: tasksData[1]?.tasks ?? [],
+			done: tasksData[2]?.tasks ?? [],
+		}
 	} catch (e) {
-		console.error(e)
-		return fail<App.Errors>(500, {
-			errors: {
-				info: 'failed to load tasks',
-			}
+		return exception({
+			message: 'failed to load tasks',
+			type: 'error',
 		})
 	}
 }

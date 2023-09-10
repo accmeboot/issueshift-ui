@@ -1,6 +1,7 @@
 import type { Actions, ServerLoad } from '@sveltejs/kit'
 import { fail, redirect } from '@sveltejs/kit'
 import { Endpoint } from '$lib'
+import { exception } from '$lib/exception'
 
 export const load: ServerLoad = ({ url, cookies }) => {
 	if (cookies.get('Bearer')) {
@@ -44,10 +45,9 @@ export const actions: Actions = {
 
 			return fail<App.Errors>(response.status, await response.json())
 		} catch (e) {
-			return fail<App.Errors>(500, {
-				errors: {
-					info: 'we are having trouble connecting to the server, please try again'
-				}
+			return exception({
+				message: 'we are having trouble connecting to the server, please try again',
+				type: 'error',
 			})
 		}
 	}

@@ -2,9 +2,10 @@ import type { Actions } from '@sveltejs/kit'
 import { type ServerLoad, fail, redirect  } from '@sveltejs/kit'
 import { uploadImage } from '$lib/services'
 import { Endpoint } from '$lib'
+import { exception } from '$lib/exception'
 
 
-export const load: ServerLoad = ({ url, cookies }) => {
+export const load: ServerLoad = ({ cookies }) => {
 	if (cookies.get('Bearer')) {
 		throw redirect(302, '/')
 	}
@@ -28,11 +29,11 @@ export const actions: Actions = {
 				return res
 			}
 
-			avatarId = res.image_id
+			avatarId = res.id
 		}
 
 		try {
-			const body = JSON.stringify({name, email, password, avatar_id: avatarId}, (_, value) => {
+			const body = JSON.stringify({name, email, password, avatarId}, (_, value) => {
 				if (value !== null) return value
 			})
 
@@ -47,10 +48,9 @@ export const actions: Actions = {
 
 			return fail<App.Errors>(response.status, await response.json())
 		} catch (e) {
-			return fail<App.Errors>(500, {
-				errors: {
-					info: 'we are having trouble connecting to the server, please try again'
-				}
+			return exception({
+				message: 'we are having trouble connecting to the server, please try again',
+				type: 'error',
 			})
 		}
 	}

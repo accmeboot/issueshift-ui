@@ -28,6 +28,7 @@
 			iconData = infoCircle
 			break
 	}
+
 </script>
 
 <slot/>

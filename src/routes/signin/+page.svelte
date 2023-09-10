@@ -4,6 +4,7 @@
 	import { goto } from '$app/navigation';
 	import type { ActionData, PageData } from "./$types";
 	import { toastStore } from '$lib/stores'
+	import { onMount } from 'svelte'
 
 	export let form: ActionData
 	export let data: PageData
@@ -14,19 +15,21 @@
 
 	$: isValid = password && email
 
+	onMount(() => {
+		return () => toastStore.clear()
+	})
+
 	const onSubmit: SubmitFunction = () => {
 		loading = true
 		return async ({update, result}) => {
-			if (result.type === 'success') {
+			if (result.type === 'success' && result?.data?.success) {
 				return await goto(data?.redirectTo)
 			}
 
-			if (result.type === 'failure' && result.status === 500) {
+			if (result.type === 'success' && result?.data?.exception) {
 				toastStore.show({
-					message: result?.data?.errors.info as string,
-					type: 'error',
-					auto: true,
-					duration: 5000,
+					message: result.data?.exception.message,
+					type: result.data?.exception.type,
 				})
 			}
 

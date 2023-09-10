@@ -1,8 +1,9 @@
 import { writable } from 'svelte/store'
+import type { ExceptionType } from '$lib/types'
 
 type ToastStore = {
 	message: string;
-	type: 'error' | 'success' | 'warning' | 'info';
+	type: ExceptionType;
 	open: boolean;
 }
 
@@ -36,6 +37,7 @@ function createToastStore() {
 				open: false,
 			}))
 		},
+		clear: () => set(null),
 	}
 }
 

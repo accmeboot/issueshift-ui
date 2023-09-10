@@ -2,7 +2,7 @@ import { type ActionFailure, fail } from '@sveltejs/kit'
 import { Endpoint } from '$lib'
 
 type ImageData = {
-	image_id: number;
+	id: number;
 }
 
 export async function uploadImage(image: File): Promise<ImageData | ActionFailure<App.Errors>> {

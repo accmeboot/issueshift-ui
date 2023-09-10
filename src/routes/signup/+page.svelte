@@ -3,6 +3,7 @@
 	import type { SubmitFunction } from "@sveltejs/kit";
 	import { goto } from '$app/navigation';
 	import type { ActionData } from "./$types";
+	import { onMount } from 'svelte'
 	import { toastStore } from '$lib/stores'
 
 	export let form: ActionData
@@ -14,19 +15,21 @@
 
 	$: isValid = password && email && name
 
+	onMount(() => {
+		return () => toastStore.clear()
+	})
+
 	const onSubmit: SubmitFunction = () => {
 		loading = true
 		return async ({update, result}) => {
-			if (result.type === 'success') {
+			if (result.type === 'success' && result.data?.success) {
 				return await goto("/signin")
 			}
 
-			if (result.type === 'failure' && result.status === 500) {
+			if (result.type === 'success' && result.data?.exception) {
 				toastStore.show({
-					message: result?.data?.errors.info as string,
-					type: 'error',
-					auto: true,
-					duration: 5000,
+					message: result.data.exception.message,
+					type: result.data.exception.type,
 				})
 			}
 
