@@ -10,6 +10,11 @@ declare global {
 			errors: Record<string, string>
 		}
 	}
+	declare namespace svelteHTML {
+		interface HTMLAttributes<T> {
+			'on:clickoutside'?: (event: CustomEvent) => void;
+		}
+	}
 }
 
 export {};

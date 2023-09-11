@@ -2,6 +2,8 @@
 export default {
   content: ['./src/**/*.{html,js,svelte,ts}'],
   themes: ["cupcake"],
-  plugins: [require("daisyui")],
+  plugins: [
+    require("daisyui"),
+  ],
 }
 
